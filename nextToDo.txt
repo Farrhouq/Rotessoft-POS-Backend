@@ -1,0 +1,2 @@
+override user model and add a new field to it (phone number)
+use the custom backend for managing auth with either email or phone number
