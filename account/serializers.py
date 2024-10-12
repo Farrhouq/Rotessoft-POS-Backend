@@ -1,6 +1,18 @@
 from rest_framework import serializers
 from .models import StaffUserProfile, AdminUserProfile, User
 from django.core.exceptions import ValidationError as DjangoValidationError
+from .authentication import EmailOrPhoneBackend
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        user = EmailOrPhoneBackend().authenticate(**attrs)
+        if not user:
+            raise serializers.ValidationError('Invalid credentials')
+        attrs['user'] = user  # Attach the authenticated user
+        return attrs
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,7 +60,6 @@ class AdminUserProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-            print(validated_data)
             user_data = validated_data.pop('user')
             print(user_data)
             user = UserSerializer.create(UserSerializer(), validated_data=user_data)
@@ -57,6 +68,7 @@ class AdminUserProfileSerializer(serializers.ModelSerializer):
 
 
 class StaffUserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = StaffUserProfile
         fields = "__all__"

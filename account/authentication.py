@@ -7,7 +7,7 @@ class EmailOrPhoneBackend(ModelBackend):
     """
     Custom authentication backend that allows users to log in using either their phone number or email.
     """
-    def authenticate(self, request, username=None, password=None, **kwargs):
+    def authenticate(self, request=None, username=None, password=None, **kwargs):
         # Check if the username is an email or phone number
         try:
             if '@' in username:

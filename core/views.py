@@ -17,10 +17,19 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    def create(self, request, *args, **kwargs):
+        store = request.user.staffuserprofile.store
+        request.data['store'] = store.id
+        return super().create(request, *args, **kwargs)
+
+    def get_queryset(self):
+        # if self.request.user.role == 'staff': # I'm hoping the user is always a staff
+        return super().get_queryset().filter(store=self.request.user.staffuserprofile.store)
 
 class ProductSaleViewSet(viewsets.ModelViewSet):
     queryset = ProductSale.objects.all()
     serializer_class = ProductSaleSerializer
+
 
 
 class SaleViewSet(viewsets.ModelViewSet):

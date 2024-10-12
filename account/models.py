@@ -11,6 +11,18 @@ class User(AbstractUser):
         self.full_clean()  # This will call the clean method to validate the data
         super().save(*args, **kwargs)  # Proceed with saving the user
 
+    @property
+    def role(self):
+        if hasattr(self, 'adminuserprofile'):
+            return 'admin'
+        if hasattr(self, 'staffuserprofile'):
+            return 'staff'
+
+    def __str__(self):
+        if self.email:
+            return self.email
+        return self.phone_number
+
     def clean(self):
         if self.email:
             if User.objects.exclude(pk=self.pk).filter(email=self.email).exists():
@@ -29,15 +41,15 @@ class AdminUserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.user.username
+    def __str__(self) -> str:
+        return str(self.user)
 
 
 class StaffUserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    store = models.ForeignKey('core.Store', on_delete=models.CASCADE)
     address = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username
