@@ -25,17 +25,18 @@ class Product(models.Model):
         return self.name
 
 
+
+class Sale(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class ProductSale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name="products")
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"
-
-
-class Sale(models.Model):
-    products = models.ManyToManyField(ProductSale)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)

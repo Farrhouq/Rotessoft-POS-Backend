@@ -60,11 +60,11 @@ class AdminUserProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-            user_data = validated_data.pop('user')
-            print(user_data)
-            user = UserSerializer.create(UserSerializer(), validated_data=user_data)
-            admin_profile = AdminUserProfile.objects.create(user=user, **validated_data)
-            return admin_profile
+        user_data = validated_data.pop('user')
+        print(user_data)
+        user = UserSerializer.create(UserSerializer(), validated_data=user_data)
+        admin_profile = AdminUserProfile.objects.create(user=user, **validated_data)
+        return admin_profile
 
 
 class StaffUserProfileSerializer(serializers.ModelSerializer):
