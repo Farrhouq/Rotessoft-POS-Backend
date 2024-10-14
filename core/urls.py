@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import StoreViewSet, ProductViewSet, ProductSaleViewSet, SaleViewSet
+from .views import StoreViewSet, ProductViewSet, ProductSaleViewSet, SaleViewSet, DashboardView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from django.urls import path
@@ -13,3 +13,7 @@ router.register(r"sale", SaleViewSet)
 
 
 urlpatterns = router.urls
+
+urlpatterns += [
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+]

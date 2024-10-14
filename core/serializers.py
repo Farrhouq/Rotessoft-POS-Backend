@@ -21,16 +21,19 @@ class ProductSaleSerializer(serializers.ModelSerializer):
 
 
 class SaleSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField()
+
+    def get_total(self, obj):
+        return obj.total
+
     class Meta:
         model = Sale
-        fields = "__all__"
+        fields = ["created_at", "__str__", "total", "store"]
 
     def validate(self, data):
-        print(data)
         return data
 
     def create(self, validated_data):
-        print(validated_data)
         sales = validated_data.pop('sales')
         product_sales = []
         store = validated_data['store']
