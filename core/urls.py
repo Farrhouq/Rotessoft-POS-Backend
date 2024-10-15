@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import StoreViewSet, ProductViewSet, ProductSaleViewSet, SaleViewSet, DashboardView
+from .views import StoreViewSet, ProductViewSet, ProductSaleViewSet, SaleViewSet, DashboardView, NewBusinessRegistrationView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from django.urls import path
@@ -16,4 +16,5 @@ urlpatterns = router.urls
 
 urlpatterns += [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('register/', NewBusinessRegistrationView.as_view(), name='new'),
 ]

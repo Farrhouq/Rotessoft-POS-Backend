@@ -9,6 +9,11 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         self.full_clean()  # This will call the clean method to validate the data
+        if not self.username:
+            if self.email:
+                self.username = self.email
+            else:
+                self.username = self.phone_number
         super().save(*args, **kwargs)  # Proceed with saving the user
 
     @property

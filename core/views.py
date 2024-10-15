@@ -12,6 +12,10 @@ from django.utils import timezone
 from django.db.models import Sum, Count, F
 from django.db.models.functions import TruncDay
 from datetime import timedelta
+from rest_framework.permissions import AllowAny
+
+from account.serializers import *
+from account.models import *
 
 class DashboardView(APIView):
     def get(self, request):
@@ -66,6 +70,27 @@ class DashboardView(APIView):
         }
 
         return Response(response_data)
+
+
+class NewBusinessRegistrationView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        if not request.user.is_superuser:
+            return Response({"message": "You are not authorized to perform this action"}, status=status.HTTP_403_FORBIDDEN)
+
+        data = request.data['data']
+        first_name = data['firstName']
+        last_name = data['lastName']
+        email_or_phone = data['emailPhone']
+        address = data['address']
+        business_name = data['businessName']
+        businessLocation = data['businessLocation']
+        daily_target = data['dailyTarget']
+
+        # create an admin user
+        admin_user = User.objects.create_user(email_or_phone, email_or_phone, 'password')
+
+        return Response({"message": "You are authorized to perform this action"}, status.HTTP_200_OK)
 
 class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()
