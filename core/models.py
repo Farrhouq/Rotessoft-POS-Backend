@@ -7,7 +7,7 @@ class Store(models.Model):
     admin = models.ForeignKey(AdminUserProfile, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    daily_target = models.FloatField(null=True)
+    daily_target = models.FloatField(default=1000)
     location = models.CharField(max_length=200, null=True)
 
     def __str__(self):

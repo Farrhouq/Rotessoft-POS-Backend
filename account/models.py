@@ -8,12 +8,11 @@ class User(AbstractUser):
     username = models.CharField(max_length=150, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # This will call the clean method to validate the data
-        if not self.username:
-            if self.email:
-                self.username = self.email
-            else:
-                self.username = self.phone_number
+        self.full_clean() # This will call the clean method to validate the data
+        if self.email:
+            self.username = self.email
+        else:
+            self.username = self.phone_number
         super().save(*args, **kwargs)  # Proceed with saving the user
 
     @property
@@ -44,6 +43,7 @@ class AdminUserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=200, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    brand_name = models.CharField(max_length=200, null=True)
     # updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:

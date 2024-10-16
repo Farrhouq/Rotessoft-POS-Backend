@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from otp.models import OTP
 
 User = get_user_model()
 
@@ -18,7 +19,10 @@ class EmailOrPhoneBackend(ModelBackend):
             return None
 
         # Verify the password
-        if user.check_password(password):
+        otp = OTP.objects.get(user=user, otp=password, is_used=False)
+        if not otp.is_expired() and user.check_password(otp.otp):
             return user
+        # if otp.otp == password:
+        #     return user
 
         return None

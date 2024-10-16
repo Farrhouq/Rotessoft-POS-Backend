@@ -13,13 +13,21 @@ from django.db.models import Sum, Count, F
 from django.db.models.functions import TruncDay
 from datetime import timedelta
 from rest_framework.permissions import AllowAny
+from otp.models import OTP
+import random
+import string
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from account.serializers import *
 from account.models import *
 
 class DashboardView(APIView):
     def get(self, request):
-        store = request.user.staffuserprofile.store
+        store = self.request.query_params.get('store', None)
+        if store:
+            store = Store.objects.get(id=store)
+        if request.user.role == 'staff':
+            store = request.user.staffuserprofile.store
         today = timezone.now().date()
         start_of_week = today - timedelta(days=today.weekday())  # Monday
         end_of_week = start_of_week + timedelta(days=6)  # Sunday
@@ -88,27 +96,50 @@ class NewBusinessRegistrationView(APIView):
         daily_target = data['dailyTarget']
 
         # create an admin user
-        admin_user = User.objects.create_user(email_or_phone, email_or_phone, 'password')
+        email = None
+        phone_number = None
+        if '@' in email_or_phone:
+            email = email_or_phone
+        else:
+            phone_number = email_or_phone
 
-        return Response({"message": "You are authorized to perform this action"}, status.HTTP_200_OK)
+        otp = ''.join(random.choices(string.digits, k=6))
+        try:
+            admin_user = User.objects.create_user(email_or_phone, email, otp, first_name=first_name, last_name=last_name, phone_number=phone_number)
+            OTP.objects.create(user=admin_user, otp=otp)
+            admin_user.set_password(otp)
+            admin_user.save()
+            admin_profile = AdminUserProfile.objects.create(user=admin_user, address=address)
+            store = Store.objects.create(name=business_name,
+                location=businessLocation, daily_target=daily_target, admin=admin_profile)
+        except:
+            return Response({"message": "An error occurred!"}, status.HTTP_400_BAD_REQUEST)
+            # return Response({"message": "Registration successful"}, status.HTTP_200_OK)
+
+        # send the otp
+        print("\n==============\nYour OTP is ", otp, "\n==============\n")
+
+        return Response({"message": "Registration successful"}, status.HTTP_200_OK)
 
 class StoreViewSet(viewsets.ModelViewSet):
+    # permission_classes = # needs to be set to something like ForAdminOnly (in terms of user.role)
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().filter(admin=self.request.user.adminuserprofile)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def create(self, request, *args, **kwargs):
-        store = request.user.staffuserprofile.store
-        request.data['store'] = store.id
-        return super().create(request, *args, **kwargs)
-
     def get_queryset(self):
-        # if self.request.user.role == 'staff': # I'm hoping the user is always a staff
-        return super().get_queryset().filter(store=self.request.user.staffuserprofile.store)
+        store = self.request.query_params.get('store')
+        if store and self.request.user.role == 'admin':
+            return super().get_queryset().filter(store=store)
+        if self.request.user.role == 'staff': # I'm hoping the user is always a staff
+            return super().get_queryset().filter(store=self.request.user.staffuserprofile.store)
 
 
 class ProductSaleViewSet(viewsets.ModelViewSet):
@@ -119,6 +150,12 @@ class ProductSaleViewSet(viewsets.ModelViewSet):
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
+
+    def get_queryset(self):
+        store = self.request.query_params.get('store')
+        if store:
+            return super().get_queryset().filter(store=store, created_at__date=timezone.now().date())
+        return super().get_queryset().filter(store=self.request.user.staffuserprofile.store, created_at__date=timezone.now().date())
 
     def create(self, request, *args, **kwargs):
         request.data['store'] = request.user.staffuserprofile.store.id

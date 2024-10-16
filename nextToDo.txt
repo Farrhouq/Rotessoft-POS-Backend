@@ -1,2 +1,1 @@
-override user model and add a new field to it (phone number)
-use the custom backend for managing auth with either email or phone number
+set expiry of access token back to 30mins, please check to confirm!!!
