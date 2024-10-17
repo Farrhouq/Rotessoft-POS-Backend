@@ -38,19 +38,19 @@ class DashboardView(APIView):
         # 1. Total sales for the day
         today_sales = ProductSale.objects.filter(sale__created_at__date=today, sale__store=store)
         total_sales_today = today_sales.aggregate(
-            total=Sum(F('quantity') * F('product__price'))
+            total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
 
         # 2. Total sales for the current week grouped by day
         # week_sales = ProductSale.objects.filter(sale__created_at__date__range=[start_of_week, end_of_week])
         # daily_sales = week_sales.values('sale__created_at__date').annotate(
-        #     total=Sum(F('quantity') * F('product__price'))
+        #     total=Sum(F('quantity') * F('product__selling_price'))
         # ).order_by('sale__created_at__date')
 
         # 2. Total sales for each of the last 7 days
         last_7_days_sales = ProductSale.objects.filter(sale__created_at__date__range=[start_of_range, end_of_range], sale__store=store)
         daily_sales = last_7_days_sales.values('sale__created_at__date').annotate(
-            total=Sum(F('quantity') * F('product__price'))
+            total=Sum(F('quantity') * F('product__selling_price'))
         ).order_by('sale__created_at__date')
 
         # 3. Top products for the current week
@@ -58,7 +58,7 @@ class DashboardView(APIView):
         #     sale__created_at__date__range=[start_of_week, end_of_week]
         # ).values('product__name').annotate(
         #     total_quantity=Sum('quantity'),
-        #     total_sales=Sum(F('quantity') * F('product__price'))
+        #     total_sales=Sum(F('quantity') * F('product__selling_price'))
         # ).order_by('-total_quantity')[:5]
 
         # 3. Top products for the last 7 days
@@ -66,7 +66,7 @@ class DashboardView(APIView):
             sale__created_at__date__range=[start_of_range, end_of_range], sale__store=store
         ).values('product__name').annotate(
             total_quantity=Sum('quantity'),
-            total_sales=Sum(F('quantity') * F('product__price'))
+            total_sales=Sum(F('quantity') * F('product__selling_price'))
         ).order_by('-total_quantity')[:5]
 
         # Prepare the response data
@@ -138,7 +138,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         store = self.request.query_params.get('store')
         if store and self.request.user.role == 'admin':
             return super().get_queryset().filter(store=store)
-        if self.request.user.role == 'staff': # I'm hoping the user is always a staff
+        if self.request.user.role == 'staff':
             return super().get_queryset().filter(store=self.request.user.staffuserprofile.store)
 
 

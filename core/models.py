@@ -17,7 +17,8 @@ class Store(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    price = models.FloatField()
+    selling_price = models.FloatField()
+    cost_price = models.FloatField()
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,7 +44,7 @@ class Sale(models.Model):
 
     @property
     def total(self):
-        return sum([(product.quantity * product.product.price) for product in self.products.all()])
+        return sum([(product.quantity * product.product.selling_price) for product in self.products.all()])
 
 class ProductSale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

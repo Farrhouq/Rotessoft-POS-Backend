@@ -16,7 +16,7 @@ class StoreSerializer(serializers.ModelSerializer):
         today = timezone.now().date()
         today_sales = ProductSale.objects.filter(sale__created_at__date=today, sale__store=obj)
         total_sales_today = today_sales.aggregate(
-            total=Sum(F('quantity') * F('product__price'))
+            total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
         return total_sales_today
 
@@ -26,14 +26,14 @@ class StoreSerializer(serializers.ModelSerializer):
         end_of_week = start_of_week + timedelta(days=6)
         week_sales = ProductSale.objects.filter(sale__created_at__date__range=[start_of_week, end_of_week], sale__store=obj)
         total_sales_week = week_sales.aggregate(
-            total=Sum(F('quantity') * F('product__price'))
+            total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
         return total_sales_week
 
     def get_overall_total(self, obj):
         overall_sales = ProductSale.objects.filter(sale__store=obj)
         total_sales_overall = overall_sales.aggregate(
-            total=Sum(F('quantity') * F('product__price'))
+            total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
         return total_sales_overall
 
