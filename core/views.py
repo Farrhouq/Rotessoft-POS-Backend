@@ -106,9 +106,9 @@ class NewBusinessRegistrationView(APIView):
         otp = ''.join(random.choices(string.digits, k=6))
         try:
             admin_user = User.objects.create_user(email_or_phone, email, otp, first_name=first_name, last_name=last_name, phone_number=phone_number)
-            OTP.objects.create(user=admin_user, otp=otp)
-            admin_user.set_password(otp)
-            admin_user.save()
+            # OTP.objects.create(user=admin_user, otp=otp)
+            # admin_user.set_password(otp)
+            # admin_user.save()
             admin_profile = AdminUserProfile.objects.create(user=admin_user, address=address)
             store = Store.objects.create(name=business_name,
                 location=businessLocation, daily_target=daily_target, admin=admin_profile)
@@ -117,7 +117,7 @@ class NewBusinessRegistrationView(APIView):
             # return Response({"message": "Registration successful"}, status.HTTP_200_OK)
 
         # send the otp
-        print("\n==============\nYour OTP is ", otp, "\n==============\n")
+        # print("\n==============\nYour OTP is ", otp, "\n==============\n")
 
         return Response({"message": "Registration successful"}, status.HTTP_200_OK)
 

@@ -81,5 +81,12 @@ class SaleSerializer(serializers.ModelSerializer):
         for sale in sales:
             product_id = sale['id']
             product = Product.objects.get(id=product_id)
+
+            if product.amount_in_stock < int(sale['quantity']):
+                new_sale.delete()
+                raise serializers.ValidationError(f"Not enough stock for product {product.name} ({product.amount_in_stock} in stock)")
             product_sale = ProductSale.objects.create(product=product, quantity=int(sale['quantity']), sale=new_sale)
+            product.amount_in_stock = F("amount_in_stock") - int(sale['quantity'])
+            product.save()
+
         return new_sale
