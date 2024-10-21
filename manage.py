@@ -2,8 +2,6 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from django.core.wsgi import get_wsgi_application
-
 
 def main():
     """Run administrative tasks."""
@@ -22,5 +20,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Add this section for Vercel
-app = get_wsgi_application()  # This is the entry point for Vercel
+# Add this section for Vercel (outside of main)
+# This is only relevant when Vercel tries to serve the application
+from django.core.wsgi import get_wsgi_application
+app = get_wsgi_application()
