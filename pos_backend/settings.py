@@ -42,7 +42,7 @@ if PLATFORM == "production":
 elif PLATFORM == "local":
     SITE_HEADER = "ROTESSOFT POS - LOCAL"
 
-ALLOWED_HOSTS = ['rotessoft-pos-backend-j337yszm9-farrhouqs-projects.vercel.app', 'farrhouqbnb.tech']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
