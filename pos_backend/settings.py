@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from os import getenv
 from dotenv import load_dotenv
+import os
 
 load_dotenv();
 
@@ -66,6 +67,7 @@ AUTH_USER_MODEL = 'account.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # This line!
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -183,3 +185,9 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# Static files settings
+STATIC_URL = '/static/'
+
+# The directory where static files are collected to be served in production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
