@@ -10,8 +10,5 @@
       "src": "/(.*)",
       "dest": "manage.py"
     }
-  ],
-  "scripts": {
-    "build": "python manage.py collectstatic --noinput"
-  }
+  ]
 }
