@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv();
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +33,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 SECRET_KEY = 'django-insecure-8)z4#xgfq5jakktw3qxiz)03nbz5+9rd26n$1pizk@f20z4h)o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv("DEBUG", True)
+
+PLATFORM = getenv("PLATFORM")
+
+if PLATFORM == "production":
+    SITE_HEADER = "ROTESSOFT POS"
+elif PLATFORM == "local":
+    SITE_HEADER = "ROTESSOFT POS - LOCAL"
 
 ALLOWED_HOSTS = []
 
@@ -89,12 +99,26 @@ WSGI_APPLICATION = 'pos_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+
+DBSQLITE_CONF = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+POSTGRES_CONF = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': getenv("POSTGRES_DATABASE"), # Ideally I would use DATABASE_NAME, DATABASE_USER, ... and so on but if you like this convention no problem
+            'USER': getenv("POSTGRES_USER"),
+            'PASSWORD': getenv("POSTGRES_PASSWORD"),
+            'HOST': getenv("POSTGRES_HOST"),
+            'PORT': getenv("POSTGRES_PORT") # I'm not using the default port
+        }
+    }
+
+DATABASES = POSTGRES_CONF if PLATFORM == "production" else DBSQLITE_CONF
 
 
 # Password validation
