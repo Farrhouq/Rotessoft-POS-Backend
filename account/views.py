@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics
 
 class AdminUserProfileViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
     queryset = AdminUserProfile.objects.all()
     serializer_class = AdminUserProfileSerializer
 
