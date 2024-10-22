@@ -81,7 +81,7 @@ class DashboardView(APIView):
 
 
 class NewBusinessRegistrationView(APIView):
-    permission_classes = [AllowAny]
+
     def post(self, request):
         if not request.user.is_superuser:
             return Response({"message": "You are not authorized to perform this action"}, status=status.HTTP_403_FORBIDDEN)
