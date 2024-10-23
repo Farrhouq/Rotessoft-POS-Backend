@@ -109,7 +109,7 @@ class NewBusinessRegistrationView(APIView):
             # OTP.objects.create(user=admin_user, otp=otp)
             # admin_user.set_password(otp)
             # admin_user.save()
-            admin_profile = AdminUserProfile.objects.create(user=admin_user, address=address)
+            admin_profile = AdminUserProfile.objects.create(user=admin_user, address=address, brand_name=business_name)
             store = Store.objects.create(name=business_name,
                 location=businessLocation, daily_target=daily_target, admin=admin_profile)
         except:

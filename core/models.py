@@ -22,7 +22,7 @@ class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    amount_in_stock = models.IntegerField()
+    amount_in_stock = models.PositiveIntegerField()
 
     class Meta:
         unique_together = ('name', 'store')

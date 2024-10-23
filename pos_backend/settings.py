@@ -186,6 +186,12 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
+# SMS API CONFIG
+ARKESEL_API_KEY = getenv('ARKESEL_API_KEY')
+
+# EMAIL API CONFIG
+SENDGRID_API_KEY = getenv('SENDGRID_API_KEY')
+
 # Static files settings
 STATIC_URL = '/static/'
 

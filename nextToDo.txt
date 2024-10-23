@@ -1,2 +1,0 @@
-set expiry of access token back to 30mins, please check to confirm!!!
-cors settings
