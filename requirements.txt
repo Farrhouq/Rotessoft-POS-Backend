@@ -9,7 +9,10 @@ idna==3.10
 psycopg2-binary==2.9.10
 PyJWT==2.9.0
 python-dotenv==1.0.1
+python-http-client==3.3.7
 requests==2.32.3
+sendgrid==6.11.0
 sqlparse==0.5.1
+starkbank-ecdsa==2.2.0
 urllib3==2.2.3
 whitenoise==6.7.0
