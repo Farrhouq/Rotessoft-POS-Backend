@@ -24,7 +24,8 @@ class SendOTPView(generics.CreateAPIView):
         email = request.data.get('username')
         # Check if user exists
         try:
-            user = User.objects.get(username=email)
+            print(email, "email")
+            user = User.objects.get(username=str(email).strip())
         except User.DoesNotExist:
             return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
