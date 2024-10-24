@@ -128,5 +128,6 @@ def send_email_otp(otp_code, email):
     try:
         sg = SendGridAPIClient(API_KEY)
         response = sg.send(message)
+        print("sent successful")
     except Exception as e:
         return str(e)
