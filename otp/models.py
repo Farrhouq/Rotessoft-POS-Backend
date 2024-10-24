@@ -14,4 +14,4 @@ class OTP(models.Model):
     is_used = models.BooleanField(default=False)
 
     def is_expired(self):
-        return (timezone.now() - self.created_at).seconds > 300  # 5 minutes
+        return (timezone.now() - self.created_at).seconds > 600  # 5 minutes
