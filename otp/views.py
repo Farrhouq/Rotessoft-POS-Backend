@@ -47,6 +47,7 @@ class SendOTPView(generics.CreateAPIView):
         # send email for non-superusers.
         if user.email:
             send_email_otp(otp, user.email)
+            print(f"otp {otp} sent to {user.email}")
             return Response({"message": "OTP sent successfully"})
 
         # send sms for non-superusers.
