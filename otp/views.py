@@ -24,7 +24,6 @@ class SendOTPView(generics.CreateAPIView):
         email = request.data.get('username')
         # Check if user exists
         try:
-            print(email, "email")
             user = User.objects.get(username=str(email).strip())
         except User.DoesNotExist:
             return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -47,7 +46,6 @@ class SendOTPView(generics.CreateAPIView):
         # send email for non-superusers.
         if user.email:
             send_email_otp(otp, user.email)
-            print(f"otp {otp} sent to {user.email}")
             return Response({"message": "OTP sent successfully"})
 
         # send sms for non-superusers.
@@ -128,6 +126,5 @@ def send_email_otp(otp_code, email):
     try:
         sg = SendGridAPIClient(API_KEY)
         response = sg.send(message)
-        print("sent successful")
     except Exception as e:
         return str(e)
