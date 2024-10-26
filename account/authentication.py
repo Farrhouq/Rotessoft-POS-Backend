@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
 from otp.models import OTP
 
 User = get_user_model()
@@ -20,7 +21,10 @@ class EmailOrPhoneBackend(ModelBackend):
 
         # to be removed, maybe
         if user.is_superuser:
-            return user
+            if check_password(password, user.password):
+                return user
+            else:
+                return None
 
         # Verify the password
         otp = OTP.objects.get(user=user, otp=password, is_used=False)
