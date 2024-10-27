@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # cors settings
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOWED_ORIGINS = ["https://rotessoft-pos-frontend.vercel.app", "http://localhost:5173"]
 
 
 # Quick-start development settings - unsuitable for production
@@ -34,9 +33,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 SECRET_KEY = getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DEBUG", True)
-
 PLATFORM = getenv("PLATFORM")
+DEBUG = PLATFORM == "local"
+
 
 if PLATFORM == "production":
     SITE_HEADER = "ROTESSOFT POS"

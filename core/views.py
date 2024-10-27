@@ -158,7 +158,11 @@ class SaleViewSet(viewsets.ModelViewSet):
         return super().get_queryset().filter(store=self.request.user.staffuserprofile.store, created_at__date=timezone.now().date())
 
     def create(self, request, *args, **kwargs):
-        request.data['store'] = request.user.staffuserprofile.store.id
+        if request.user.role == "staff":
+            request.data['store'] = request.user.staffuserprofile.store.id
+        elif request.user.role == "admin":
+            store_id = self.request.query_params.get('store')
+            request.data['store'] = store_id
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer, extra_data=request.data['sales'])
