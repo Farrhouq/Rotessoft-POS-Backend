@@ -17,6 +17,7 @@ from otp.models import OTP
 import random
 import string
 from rest_framework_simplejwt.tokens import RefreshToken
+from datetime import date
 
 from account.serializers import *
 from account.models import *
@@ -40,6 +41,7 @@ class DashboardView(APIView):
         total_sales_today = today_sales.aggregate(
             total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
+        print(total_sales_today)
 
         # 2. Total sales for the current week grouped by day
         # week_sales = ProductSale.objects.filter(sale__created_at__date__range=[start_of_week, end_of_week])
@@ -53,6 +55,14 @@ class DashboardView(APIView):
             total=Sum(F('quantity') * F('product__selling_price'))
         ).order_by('sale__created_at__date')
 
+        # if no product sales for today
+        today = date.today()
+        if  not total_sales_today:
+            # If today's date is not in the queryset, add it with total 0
+            daily_sales = list(daily_sales)  # Convert queryset to list for modification
+            daily_sales.append({'total': 0.0, 'sale__created_at__date': today})
+
+        print(daily_sales)
         # 3. Top products for the current week
         # top_products = ProductSale.objects.filter(
         #     sale__created_at__date__range=[start_of_week, end_of_week]
