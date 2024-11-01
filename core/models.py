@@ -33,7 +33,7 @@ class Product(models.Model):
 
 class Sale(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     customer_name = models.CharField(max_length=200, null=True, blank=True)
     amount_paid = models.FloatField(null=True, blank=True)
 

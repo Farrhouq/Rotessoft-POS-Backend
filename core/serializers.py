@@ -77,7 +77,8 @@ class SaleSerializer(serializers.ModelSerializer):
         sales = validated_data.pop('sales')
         product_sales = []
         store = validated_data['store']
-        new_sale = Sale.objects.create(store=store)
+        created_at = validated_data['created_at']
+        new_sale = Sale.objects.create(store=store, created_at=created_at)
         for sale in sales:
             product_id = sale['id']
             product = Product.objects.get(id=product_id)

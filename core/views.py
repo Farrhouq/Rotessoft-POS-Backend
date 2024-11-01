@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from django.db.models import Sum, Count, F
 from django.db.models.functions import TruncDay
-from datetime import timedelta
+from datetime import timedelta, datetime
 from rest_framework.permissions import AllowAny
 from otp.models import OTP
 import random
@@ -41,7 +41,7 @@ class DashboardView(APIView):
         total_sales_today = today_sales.aggregate(
             total=Sum(F('quantity') * F('product__selling_price'))
         )['total'] or 0
-        print(total_sales_today)
+        # print(total_sales_today)
 
         # 2. Total sales for the current week grouped by day
         # week_sales = ProductSale.objects.filter(sale__created_at__date__range=[start_of_week, end_of_week])
@@ -62,7 +62,7 @@ class DashboardView(APIView):
             daily_sales = list(daily_sales)  # Convert queryset to list for modification
             daily_sales.append({'total': 0.0, 'sale__created_at__date': today})
 
-        print(daily_sales)
+        # print(daily_sales)
         # 3. Top products for the current week
         # top_products = ProductSale.objects.filter(
         #     sale__created_at__date__range=[start_of_week, end_of_week]
@@ -173,6 +173,10 @@ class SaleViewSet(viewsets.ModelViewSet):
         elif request.user.role == "admin":
             store_id = self.request.query_params.get('store')
             request.data['store'] = store_id
+
+        time_created_str = request.data['created_at']
+        time_created = datetime.fromisoformat(time_created_str.replace("Z", "+00:00"))
+        request.data["created_at"] = time_created
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer, extra_data=request.data['sales'])
