@@ -1,6 +1,14 @@
 from django.db import models
+from django.db.models.base import IntegerField
 from account.models import AdminUserProfile, StaffUserProfile
+from uuid import uuid4
 
+# Inherit from this model to use a uuid as the primary key
+class AbstractModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
+    class Meta:
+        abstract = True
 
 class Store(models.Model):
     name = models.CharField(max_length=200)
@@ -31,12 +39,11 @@ class Product(models.Model):
         return self.name
 
 
-class Sale(models.Model):
+class Sale(AbstractModel):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     customer_name = models.CharField(max_length=200, null=True, blank=True)
     amount_paid = models.FloatField(null=True, blank=True)
-
 
     class Meta:
         ordering = ['-created_at']
@@ -49,9 +56,10 @@ class Sale(models.Model):
     def total(self):
         return sum([(product.quantity * product.product.selling_price) for product in self.products.all()])
 
+
 class ProductSale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name="products")
+    sale = models.ForeignKey(Sale, on_delete=models.SET_NULL, related_name="products", null=True)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

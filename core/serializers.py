@@ -68,16 +68,20 @@ class SaleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sale
-        fields = ["created_at", "__str__", "total", "store"]
+        fields = ["created_at", "__str__", "total", "store", "id"]
 
     def validate(self, data):
         return data
 
     def create(self, validated_data):
+        print("heere")
+        print(validated_data, "\n\n-------------------------------------\n\n")
         sales = validated_data.pop('sales')
         product_sales = []
         store = validated_data['store']
         created_at = validated_data['created_at']
+        # id = validated_data["id"]
+        print(id)
         new_sale = Sale.objects.create(store=store, created_at=created_at)
         for sale in sales:
             product_id = sale['id']
