@@ -5,7 +5,7 @@ from uuid import uuid4
 
 # Inherit from this model to use a uuid as the primary key
 class AbstractModel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4)
 
     class Meta:
         abstract = True
@@ -59,7 +59,7 @@ class Sale(AbstractModel):
 
 class ProductSale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    sale = models.ForeignKey(Sale, on_delete=models.SET_NULL, related_name="products", null=True)
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name="products")
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
