@@ -174,14 +174,31 @@ class SaleViewSet(viewsets.ModelViewSet):
             store_id = self.request.query_params.get('store')
             request.data['store'] = store_id
 
+        request.data['made_by'] = request.user.id
         time_created_str = request.data['created_at']
         time_created = datetime.fromisoformat(time_created_str.replace("Z", "+00:00"))
         request.data["created_at"] = time_created
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, extra_data=request.data['sales'])
+        self.perform_create(serializer, extra_data={
+            "sales": request.data['sales'],
+            "made_by": request.data['made_by'],
+            "customer_name": request.data['customer_name']
+        })
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer, extra_data):
-        serializer.save(sales=extra_data)
+        serializer.save(sales=extra_data['sales'],
+            made_by=extra_data['made_by'],
+            customer_name=extra_data['customer_name'])
+
+    def retrieve(self, request, *args, **kwargs):
+        sale = self.get_object()
+        return Response({
+            "made_by": sale.sale_made_by.first_name, # + " " + sale.sale_made_by.last_name,
+            "customer_name": sale.customer_name,
+            "created_at" : sale.created_at,
+            "total" : sale.total,
+            "products": sale.products.all().values('product__name', 'quantity', 'previous_quantity', 'product__selling_price')
+        })

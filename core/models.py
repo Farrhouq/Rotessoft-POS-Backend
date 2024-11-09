@@ -44,6 +44,7 @@ class Sale(AbstractModel):
     created_at = models.DateTimeField()
     customer_name = models.CharField(max_length=200, null=True, blank=True)
     amount_paid = models.FloatField(null=True, blank=True)
+    sale_made_by = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name="sales")
 
     class Meta:
         ordering = ['-created_at']
@@ -61,6 +62,7 @@ class ProductSale(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name="products")
     quantity = models.IntegerField()
+    previous_quantity = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

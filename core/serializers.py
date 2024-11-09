@@ -4,6 +4,7 @@ from .models import Store, Product, ProductSale, Sale
 from django.db.models import Sum, Count, F
 from django.utils import timezone
 from datetime import timedelta
+from account.models import User
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -74,15 +75,22 @@ class SaleSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        print("heere")
-        print(validated_data, "\n\n-------------------------------------\n\n")
-        sales = validated_data.pop('sales')
         product_sales = []
+        sales = validated_data.pop('sales')
+        id = validated_data["id"]
         store = validated_data['store']
         created_at = validated_data['created_at']
-        # id = validated_data["id"]
-        print(id)
-        new_sale = Sale.objects.create(store=store, created_at=created_at)
+        customer_name = validated_data['customer_name']
+        made_by_user_id = validated_data['made_by'] # the user who made the sale (might be the admin, or one of the staff. Multiple staff will be possible in the future)
+
+        try:
+            made_by_user = User.objects.get(id=made_by_user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+
+        new_sale = Sale.objects.create(store=store, created_at=created_at, id=id,
+            sale_made_by=made_by_user, customer_name=customer_name)
+
         for sale in sales:
             product_id = sale['id']
             product = Product.objects.get(id=product_id)
@@ -90,7 +98,7 @@ class SaleSerializer(serializers.ModelSerializer):
             if product.amount_in_stock < int(sale['quantity']):
                 new_sale.delete()
                 raise serializers.ValidationError(f"Not enough stock for product {product.name} ({product.amount_in_stock} in stock)")
-            product_sale = ProductSale.objects.create(product=product, quantity=int(sale['quantity']), sale=new_sale)
+            product_sale = ProductSale.objects.create(product=product, quantity=int(sale['quantity']), previous_quantity=product.amount_in_stock, sale=new_sale)
             product.amount_in_stock = F("amount_in_stock") - int(sale['quantity'])
             product.save()
 
