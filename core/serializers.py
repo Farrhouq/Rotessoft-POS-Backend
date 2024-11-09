@@ -80,7 +80,7 @@ class SaleSerializer(serializers.ModelSerializer):
         id = validated_data["id"]
         store = validated_data['store']
         created_at = validated_data['created_at']
-        customer_name = validated_data['customer_name']
+        customer_name = validated_data.get('customer_name')
         made_by_user_id = validated_data['made_by'] # the user who made the sale (might be the admin, or one of the staff. Multiple staff will be possible in the future)
 
         try:
