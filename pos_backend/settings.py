@@ -34,7 +34,7 @@ SECRET_KEY = getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 PLATFORM = getenv("PLATFORM")
-DEBUG = PLATFORM == "local"
+DEBUG = True #PLATFORM == "local"
 
 
 if PLATFORM == "production":

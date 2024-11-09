@@ -62,14 +62,15 @@ class ProductSaleSerializer(serializers.ModelSerializer):
 
 
 class SaleSerializer(serializers.ModelSerializer):
-    total = serializers.SerializerMethodField()
+    # total = serializers.SerializerMethodField()
 
-    def get_total(self, obj):
-        return obj.total
+    # def get_total(self, obj):
+    #     return 5
+    #     # return obj.total
 
     class Meta:
         model = Sale
-        fields = ["created_at", "__str__", "total", "store", "id"]
+        fields = ["created_at", "product_string", "total", "store", "id"]
 
     def validate(self, data):
         return data
@@ -91,6 +92,8 @@ class SaleSerializer(serializers.ModelSerializer):
         new_sale = Sale.objects.create(store=store, created_at=created_at, id=id,
             sale_made_by=made_by_user, customer_name=customer_name)
 
+        sale_total = 0
+        product_names_list = []
         for sale in sales:
             product_id = sale['id']
             product = Product.objects.get(id=product_id)
@@ -99,7 +102,13 @@ class SaleSerializer(serializers.ModelSerializer):
                 new_sale.delete()
                 raise serializers.ValidationError(f"Not enough stock for product {product.name} ({product.amount_in_stock} in stock)")
             product_sale = ProductSale.objects.create(product=product, quantity=int(sale['quantity']), previous_quantity=product.amount_in_stock, sale=new_sale)
+            sale_total += sale['quantity'] * product.selling_price
+            product_names_list.append(product.name)
             product.amount_in_stock = F("amount_in_stock") - int(sale['quantity'])
             product.save()
+
+        new_sale.total = sale_total
+        new_sale.product_string = ", ".join(product_names_list)
+        new_sale.save()
 
         return new_sale

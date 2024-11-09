@@ -45,17 +45,21 @@ class Sale(AbstractModel):
     customer_name = models.CharField(max_length=200, null=True, blank=True)
     amount_paid = models.FloatField(null=True, blank=True)
     sale_made_by = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name="sales")
+    product_string = models.CharField(max_length=200, null=True)
+    total = models.FloatField(null=True)
 
     class Meta:
         ordering = ['-created_at']
 
-    def __str__(self):
-        products = self.products.all()
-        return ", ".join([product.product.name for product in products])
+    # def __str__(self):
+    #     return "str"
+        # products = self.products.all()
+        # return ", ".join([product.product.name for product in products])
 
-    @property
-    def total(self):
-        return sum([(product.quantity * product.product.selling_price) for product in self.products.all()])
+    # @property
+    # def total(self):
+    #     return 5
+    #     # return sum([(product.quantity * product.product.selling_price) for product in self.products.all()])
 
 
 class ProductSale(models.Model):
