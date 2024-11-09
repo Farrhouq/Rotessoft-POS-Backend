@@ -183,7 +183,7 @@ class SaleViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer, extra_data={
             "sales": request.data['sales'],
             "made_by": request.data['made_by'],
-            "customer_name": request.get('customer_name')
+            "customer_name": request.data.get('customer_name')
         })
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
