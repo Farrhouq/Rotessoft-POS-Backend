@@ -212,3 +212,15 @@ class SaleViewSet(viewsets.ModelViewSet):
             "total" : sale.total,
             "products": sale.products.all().values('product__name', 'quantity', 'previous_quantity', 'product__selling_price')
         })
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            sale = Sale.objects.get(id=kwargs['pk'])
+        except Sale.DoesNotExist:
+            return Response({"message": "Sale not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        for product in sale.products.all():
+            product.product.amount_in_stock += product.quantity
+            product.product.save()
+        sale.delete()
+        return Response({"message": "Sale deleted successfully"}, status=status.HTTP_200_OK)
