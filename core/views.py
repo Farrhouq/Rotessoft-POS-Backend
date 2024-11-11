@@ -200,7 +200,11 @@ class SaleViewSet(viewsets.ModelViewSet):
             customer_name=extra_data['customer_name'])
 
     def retrieve(self, request, *args, **kwargs):
-        sale = self.get_object()
+        try:
+            sale = Sale.objects.get(id=kwargs['pk'])
+        except Sale.DoesNotExist:
+            return Response({"message": "Sale not found"}, status=status.HTTP_404_NOT_FOUND)
+
         return Response({
             "made_by": sale.sale_made_by.first_name, # + " " + sale.sale_made_by.last_name,
             "customer_name": sale.customer_name,
