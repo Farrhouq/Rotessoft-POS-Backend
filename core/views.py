@@ -163,9 +163,15 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         store = self.request.query_params.get('store')
+        offset_from_today = int(self.request.query_params.get('offset', 0))  # Default to 0 if not provided
+
+        target_day = timezone.now() - timedelta(days=offset_from_today)
+        start_of_day = target_day.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = target_day.replace(hour=23, minute=59, second=59, microsecond=999999)
+
         if store:
-            return super().get_queryset().filter(store=store, created_at__date=timezone.now().date())
-        return super().get_queryset().filter(store=self.request.user.staffuserprofile.store, created_at__date=timezone.now().date())
+            return Sale.objects.filter(created_at__range=(start_of_day, end_of_day), store=store)
+        return Sale.objects.filter(created_at__range=(start_of_day, end_of_day), store=self.request.user.staffuserprofile.store)
 
     def create(self, request, *args, **kwargs):
         if request.user.role == "staff":
