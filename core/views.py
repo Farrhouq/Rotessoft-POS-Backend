@@ -165,7 +165,7 @@ class SaleViewSet(viewsets.ModelViewSet):
         store = self.request.query_params.get('store')
         offset_from_today = int(self.request.query_params.get('offset', 0))  # Default to 0 if not provided
 
-        target_day = timezone.now() - timedelta(days=offset_from_today)
+        target_day = timezone.now() - timedelta(days=-offset_from_today)
         start_of_day = target_day.replace(hour=0, minute=0, second=0, microsecond=0)
         end_of_day = target_day.replace(hour=23, minute=59, second=59, microsecond=999999)
 
