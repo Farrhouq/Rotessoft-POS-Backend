@@ -179,7 +179,7 @@ AUTHENTICATION_BACKENDS = (
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300), # !!! change back immediately to 5 minutes
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30), # !!! change back immediately to 5 minutes
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
