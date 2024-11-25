@@ -40,7 +40,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     def get_staff_id(self, obj):
         try:
-            return StaffUserProfile.objects.get(store=obj).id#.values_list('id', flat=True)
+            return StaffUserProfile.objects.filter(store=obj).first().id #.values_list('id', flat=True)
         except StaffUserProfile.DoesNotExist:
             return None
 
