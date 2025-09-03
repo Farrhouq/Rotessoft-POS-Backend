@@ -21,5 +21,5 @@ ruff==0.7.3
 sendgrid==6.11.0
 sqlparse==0.5.1
 starkbank-ecdsa==2.2.0
-urllib3==2.2.3
+urllib3==2.5.0
 whitenoise==6.7.0
